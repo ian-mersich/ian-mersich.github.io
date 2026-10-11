@@ -1,2 +1,4 @@
 _site/
 .figure-pages-build-*/
+__pycache__/
+*.py[cod]
