@@ -38,6 +38,7 @@ MAX_ENTRIES = 50_000
 MAX_FILE_BYTES = 500_000_000
 MAX_TOTAL_BYTES = 2_000_000_000
 MAX_COMPRESSION_RATIO = 1_000
+ALLOWED_CUSTOM_DOMAIN = "imersich.com"
 
 
 class BuildError(ValueError):
@@ -184,6 +185,21 @@ def _extract_verified(archive_path: Path, destination: Path) -> None:
         raise BuildError(f"Cannot safely extract Figure release ZIP: {exc}") from exc
 
 
+def _validated_cname(website_dir: Path) -> str | None:
+    path = _fs(website_dir / "CNAME")
+    if not path.exists():
+        return None
+    if path.is_symlink() or not path.is_file():
+        raise BuildError("CNAME must be a regular file in the site root")
+    try:
+        value = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as exc:
+        raise BuildError(f"Cannot read site CNAME: {exc}") from exc
+    if value.strip() != ALLOWED_CUSTOM_DOMAIN or len(value.splitlines()) != 1:
+        raise BuildError(f"CNAME must contain only the approved domain {ALLOWED_CUSTOM_DOMAIN}")
+    return ALLOWED_CUSTOM_DOMAIN + "\n"
+
+
 def build_site(
     *,
     config_path: Path = CONFIG,
@@ -203,6 +219,7 @@ def build_site(
         raise BuildError(f"Refusing to overwrite existing output: {output}")
     if not _fs(pages_dir).is_dir() or not _fs(license_path).is_file():
         raise BuildError("Website template pages or owner LICENSE are missing")
+    cname_content = _validated_cname(Path(website_dir))
     _fs(output.parent).mkdir(parents=True, exist_ok=True)
     stage = Path(tempfile.mkdtemp(prefix=".figure-pages-build-", dir=_fs(website_abs)))
     try:
@@ -227,6 +244,8 @@ def build_site(
             json.dumps({"product_version": config["product_version"], "archive_sha256": actual_digest}, indent=2) + "\n",
             encoding="utf-8",
         )
+        if cname_content is not None:
+            _fs(site / "CNAME").write_text(cname_content, encoding="utf-8", newline="\n")
         # The staged subtree has the same root as the output, so rename is atomic on this volume.
         _fs(site).replace(_fs(output))
     except Exception:

@@ -107,9 +107,21 @@ class FigurePagesConsumerTests(unittest.TestCase):
         self.assertIn("/superbench/figure_tool/", overview)
         for forbidden in ("manuscript", "private report", "patient", "unpublished data", "personal research"):
             self.assertNotIn(forbidden, (root + overview).casefold())
-        self.assertFalse((TEMPLATE / "CNAME").exists())
+        cname = TEMPLATE / "CNAME"
+        if cname.exists():
+            self.assertEqual(cname.read_text(encoding="utf-8").strip(), builder.ALLOWED_CUSTOM_DOMAIN)
         self.assertTrue((TEMPLATE / "LICENSE").is_file())
         self.assertTrue((TEMPLATE / ".github/workflows/pages.yml").is_file())
+
+    def test_custom_domain_is_validated_and_preserved_in_built_site(self) -> None:
+        cname = self.website / "CNAME"
+        cname.write_text(builder.ALLOWED_CUSTOM_DOMAIN + "\n", encoding="utf-8", newline="\n")
+        output = self.build()
+        self.assertEqual(builder._fs(output / "CNAME").read_text(encoding="utf-8"), builder.ALLOWED_CUSTOM_DOMAIN + "\n")
+
+        cname.write_text("evil.example\n", encoding="utf-8", newline="\n")
+        with self.assertRaisesRegex(builder.BuildError, "approved domain"):
+            self.build(output=self.website / "rejected-domain")
 
     def test_pending_malformed_or_wrong_release_configuration_fails_closed(self) -> None:
         for field, value in (("archive_sha256", "PENDING"), ("archive_sha256", "a" * 63),
