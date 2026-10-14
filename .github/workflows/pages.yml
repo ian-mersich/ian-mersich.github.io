@@ -30,9 +30,9 @@ jobs:
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b
 
       - name: Test the consumer template
-        run: python3 -m unittest tests.test_figure_pages_consumer
+        run: python3 -m unittest discover -s tests
 
-      - name: Build the pinned Figure Tool site
+      - name: Build the pinned scientific tool site
         run: python3 scripts/build_site.py
 
       - name: Upload Pages artifact

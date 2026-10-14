@@ -33,7 +33,7 @@ main { overflow: hidden; }
 h1, h2, h3 { line-height: 1.15; letter-spacing: -.035em; }
 h1 { max-width: 780px; margin: 20px 0 16px; font-size: clamp(2.55rem, 6vw, 4.8rem); }
 .lead { max-width: 680px; margin: 0; color: var(--muted); font-size: 1.15rem; }
-.product-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; padding: 4px 0 72px; }
+.product-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; padding: 4px 0 72px; }
 .product-card { display: flex; min-height: 250px; flex-direction: column; align-items: flex-start; padding: 28px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); box-shadow: 0 14px 34px rgba(24,47,55,.055); }
 .product-card:nth-child(2) { background: linear-gradient(145deg, #fff 20%, var(--blue)); }
 .card-mark { width: 42px; height: 42px; display: grid; place-items: center; margin-bottom: 22px; border-radius: 12px; color: var(--accent-dark); background: var(--mint); font-weight: 800; }
@@ -43,7 +43,8 @@ h1 { max-width: 780px; margin: 20px 0 16px; font-size: clamp(2.55rem, 6vw, 4.8re
 .card-link:hover { text-decoration: underline; text-underline-offset: 4px; }
 .page-hero { padding: 66px 0 42px; }
 .page-hero h1 { max-width: 740px; font-size: clamp(2.45rem, 5vw, 4rem); }
-.content-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(250px, .7fr); gap: 22px; padding: 0 0 72px; }
+.content-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(250px, .7fr); align-items: start; gap: 22px; padding: 0 0 72px; }
+.available-tools { display: grid; gap: 22px; min-width: 0; }
 .panel { padding: 26px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
 .panel h2 { margin: 0 0 12px; font-size: 1.28rem; }
 .panel p { margin: 0; color: var(--muted); }
@@ -51,9 +52,13 @@ h1 { max-width: 780px; margin: 20px 0 16px; font-size: clamp(2.55rem, 6vw, 4.8re
 .availability { border-color: #badbd3; background: #edf7f4; }
 .action { display: inline-flex; min-height: 45px; align-items: center; justify-content: center; margin-top: 22px; padding: 0 17px; border-radius: 8px; color: white; background: var(--accent); font-weight: 720; text-decoration: none; }
 .action:hover { background: var(--accent-dark); }
+.action + p { margin-top: 14px; font-size: .9rem; }
 .footer { border-top: 1px solid var(--line); padding: 22px 0 32px; color: var(--muted); font-size: .9rem; }
 .footer-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 24px; }
 .footer p { margin: 0; }
+@media (min-width: 701px) and (max-width: 1000px) {
+  .product-grid { grid-template-columns: 1fr; }
+}
 @media (max-width: 700px) {
   .shell { width: min(100% - 30px, 540px); }
   .nav { align-items: flex-start; flex-direction: column; justify-content: center; padding: 14px 0; gap: 12px; }

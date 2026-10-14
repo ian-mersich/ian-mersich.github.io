@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the small public Pages site from a digest-pinned Figure web release."""
+"""Build the public Pages site from digest-pinned scientific-tool releases."""
 from __future__ import annotations
 
 import argparse
@@ -27,6 +27,13 @@ EXPECTED_URL = (
     "v1.0.0-beta.6/figure-tool-web.zip"
 )
 EXPECTED_PREFIX = "superbench/figure_tool"
+MIRNA_DESTINATION = "superbench/mirna"
+MIRNA_REQUIRED_FILES = {
+    "index.html", "browser-worker.mjs", "browser-runtime.mjs",
+    "data/model/manifest.json", "data/model/weights.bin", "release_manifest.json",
+    "LICENSE", "NOTICE.txt", "MODEL_AND_RESULTS_LICENSE.md", "DATA_SOURCES.md",
+    "RELEASE_METADATA.json",
+}
 REQUIRED_FILES = {
     f"{EXPECTED_PREFIX}/index.html",
     f"{EXPECTED_PREFIX}/app/index.html",
@@ -75,6 +82,34 @@ def load_release_config(path: Path = CONFIG) -> dict[str, str]:
     return data
 
 
+def load_mirna_release_config(path: Path) -> dict[str, str]:
+    try:
+        data = json.loads(_fs(path).read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise BuildError(f"Cannot read miRNA release config: {exc}") from exc
+    if not isinstance(data, dict) or data.get("schema") != "mirnaPagesRelease.v1":
+        raise BuildError("Unsupported miRNA Pages release config schema")
+    if data.get("publication_status") != "cleared":
+        raise BuildError("miRNA release has not been cleared for publication")
+    if data.get("destination") != MIRNA_DESTINATION or data.get("archive_root") != "":
+        raise BuildError("miRNA ZIP must have a flat root and deploy only at superbench/mirna/")
+    if data.get("model_id") != "s09_p1_browser_v1":
+        raise BuildError("miRNA Pages consumer expects the accepted P1 browser model")
+    version = data.get("product_version")
+    if not isinstance(version, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}", version):
+        raise BuildError("miRNA product version is missing or malformed")
+    url = data.get("archive_url")
+    if not isinstance(url, str) or not re.fullmatch(
+        r"https://github\.com/ian-mersich/[A-Za-z0-9._-]+/releases/download/"
+        r"[A-Za-z0-9._-]+/[A-Za-z0-9._-]+\.zip", url
+    ) or "/latest/" in url:
+        raise BuildError("miRNA archive must use an immutable owner GitHub release URL")
+    digest = data.get("archive_sha256")
+    if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
+        raise BuildError("miRNA release archive SHA-256 is missing or malformed")
+    return data
+
+
 def _sha256(path: Path) -> str:
     digest = hashlib.sha256()
     with _fs(path).open("rb") as stream:
@@ -105,7 +140,10 @@ def _download(url: str, destination: Path) -> None:
         raise BuildError(f"Could not download pinned Figure release: {exc}") from exc
 
 
-def _safe_members(archive: zipfile.ZipFile) -> list[tuple[zipfile.ZipInfo, str]]:
+def _safe_members(
+    archive: zipfile.ZipFile, *, archive_root: str = EXPECTED_PREFIX,
+    required_files: set[str] = REQUIRED_FILES,
+) -> list[tuple[zipfile.ZipInfo, str]]:
     infos = archive.infolist()
     if not infos or len(infos) > MAX_ENTRIES:
         raise BuildError("Figure ZIP is empty or has too many entries")
@@ -114,7 +152,7 @@ def _safe_members(archive: zipfile.ZipFile) -> list[tuple[zipfile.ZipInfo, str]]
     dirs: set[str] = set()
     total = 0
     result: list[tuple[zipfile.ZipInfo, str]] = []
-    prefix = EXPECTED_PREFIX + "/"
+    prefix = archive_root + "/"
     for info in infos:
         name = info.filename
         if not name or "\x00" in name or "\\" in name:
@@ -132,8 +170,8 @@ def _safe_members(archive: zipfile.ZipFile) -> list[tuple[zipfile.ZipInfo, str]]
         if key in seen:
             raise BuildError(f"Duplicate or case-colliding ZIP member: {name}")
         seen.add(key)
-        if not (normalized == EXPECTED_PREFIX or normalized.startswith(prefix)):
-            raise BuildError(f"Unexpected path outside {EXPECTED_PREFIX}/: {name}")
+        if archive_root and not (normalized == archive_root or normalized.startswith(prefix)):
+            raise BuildError(f"Unexpected path outside {archive_root}/: {name}")
         mode = (info.external_attr >> 16) & 0xFFFF
         kind = stat.S_IFMT(mode)
         if kind not in (0, stat.S_IFDIR if is_dir else stat.S_IFREG):
@@ -158,18 +196,21 @@ def _safe_members(archive: zipfile.ZipFile) -> list[tuple[zipfile.ZipInfo, str]]
         parts = filename.split("/")
         if any("/".join(parts[:count]) in files for count in range(1, len(parts))):
             raise BuildError(f"ZIP file is also a parent directory: {filename}")
-    for filename in REQUIRED_FILES:
+    for filename in required_files:
         if filename.casefold() not in files:
             raise BuildError(f"Figure ZIP is missing required file: {filename}")
     return result
 
 
-def _extract_verified(archive_path: Path, destination: Path) -> None:
+def _extract_verified(
+    archive_path: Path, destination: Path, *, archive_root: str = EXPECTED_PREFIX,
+    required_files: set[str] = REQUIRED_FILES,
+) -> None:
     if _fs(archive_path).stat().st_size > MAX_ARCHIVE_BYTES:
         raise BuildError("Figure release ZIP exceeds the archive size limit")
     try:
         with zipfile.ZipFile(_fs(archive_path)) as archive:
-            members = _safe_members(archive)
+            members = _safe_members(archive, archive_root=archive_root, required_files=required_files)
             for info, name in members:
                 target = _fs(destination.joinpath(*PurePosixPath(name).parts))
                 if info.is_dir():
@@ -208,8 +249,14 @@ def build_site(
     pages_dir: Path = PAGES,
     license_path: Path = LICENSE,
     website_dir: Path = WEBSITE,
+    mirna_config_path: Path | None = None,
+    mirna_archive_path: Path | None = None,
 ) -> Path:
     config = load_release_config(config_path)
+    mirna_path = mirna_config_path or (Path(website_dir) / "config/mirna-release.json")
+    mirna_config = load_mirna_release_config(mirna_path) if mirna_config_path is not None or _fs(mirna_path).exists() else None
+    if mirna_archive_path is not None and mirna_config is None:
+        raise BuildError("A local miRNA archive requires a cleared pinned release config")
     output = output_dir or (website_dir / "_site")
     output = Path(output).resolve()
     website_abs = Path(website_dir).resolve()
@@ -238,6 +285,44 @@ def build_site(
         site = stage / "site"
         shutil.copytree(_fs(pages_dir), _fs(site))
         _extract_verified(archive, site)
+        if mirna_config is not None:
+            mirna_archive = stage / "mirna-predictor-web.zip"
+            if mirna_archive_path is None:
+                _download(mirna_config["archive_url"], mirna_archive)
+            else:
+                if _fs(mirna_archive_path).stat().st_size > MAX_ARCHIVE_BYTES:
+                    raise BuildError("miRNA release ZIP exceeds the archive size limit")
+                shutil.copyfile(_fs(mirna_archive_path), _fs(mirna_archive))
+            mirna_digest = _sha256(mirna_archive)
+            if mirna_digest != mirna_config["archive_sha256"]:
+                raise BuildError("miRNA ZIP digest differs from its accepted release pin")
+            mirna_output = site / MIRNA_DESTINATION
+            _fs(mirna_output).mkdir(parents=True, exist_ok=False)
+            _extract_verified(
+                mirna_archive, mirna_output, archive_root="",
+                required_files=MIRNA_REQUIRED_FILES,
+            )
+            try:
+                manifest_bytes = _fs(mirna_output / "release_manifest.json").read_bytes()
+                tool_manifest = json.loads(manifest_bytes)
+                tool_metadata = json.loads(_fs(mirna_output / "RELEASE_METADATA.json").read_text(encoding="utf-8"))
+                if (tool_manifest.get("publication_status") != "cleared"
+                        or tool_metadata.get("publication_status") != "cleared"
+                        or tool_manifest.get("release_version") != mirna_config["product_version"]
+                        or tool_metadata.get("release_version") != mirna_config["product_version"]
+                        or tool_manifest.get("model", {}).get("id") != mirna_config["model_id"]
+                        or tool_metadata.get("model_id") != mirna_config["model_id"]):
+                    raise BuildError("miRNA artifact identity or clearance differs from its release pin")
+                expected_manifest = mirna_config.get("release_manifest_sha256")
+                if expected_manifest and hashlib.sha256(manifest_bytes).hexdigest() != expected_manifest:
+                    raise BuildError("miRNA release manifest differs from its accepted pin")
+            except (OSError, UnicodeError, ValueError, AttributeError) as exc:
+                raise BuildError(f"Cannot verify miRNA artifact metadata: {exc}") from exc
+            _fs(site / "MIRNA_RELEASE.json").write_text(
+                json.dumps({key: mirna_config[key] for key in (
+                    "product_version", "model_id", "archive_sha256",
+                )}, indent=2) + "\n", encoding="utf-8",
+            )
         shutil.copyfile(_fs(license_path), _fs(site / "LICENSE"))
         _fs(site / ".nojekyll").write_text("", encoding="utf-8")
         _fs(site / "FIGURE_RELEASE.json").write_text(
@@ -258,10 +343,15 @@ def build_site(
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--archive", type=Path, help="Use a local release ZIP for offline qualification")
-    parser.add_argument("--output", type=Path, help="Fresh output directory under publication/website/ (default: _site)")
+    parser.add_argument("--mirna-config", type=Path, help="Explicit cleared miRNA release config")
+    parser.add_argument("--mirna-archive", type=Path, help="Use a local pinned miRNA ZIP for offline qualification")
+    parser.add_argument("--output", type=Path, help="Fresh output directory under the website checkout (default: _site)")
     args = parser.parse_args(argv)
     try:
-        output = build_site(archive_path=args.archive, output_dir=args.output)
+        output = build_site(
+            archive_path=args.archive, output_dir=args.output,
+            mirna_config_path=args.mirna_config, mirna_archive_path=args.mirna_archive,
+        )
     except BuildError as exc:
         print(f"build_site: {exc}", file=sys.stderr)
         return 2

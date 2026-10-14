@@ -99,12 +99,14 @@ class FigurePagesConsumerTests(unittest.TestCase):
         self.assertEqual(metadata["product_version"], "1.0.0-beta.6")
         self.assertEqual(metadata["archive_sha256"], hashlib.sha256(self.archive.read_bytes()).hexdigest())
 
-    def test_real_template_is_neutral_and_links_only_the_two_products(self) -> None:
+    def test_real_template_links_public_tools_and_excludes_private_content(self) -> None:
         root = (TEMPLATE / "pages/index.html").read_text(encoding="utf-8")
         overview = (TEMPLATE / "pages/superbench/index.html").read_text(encoding="utf-8")
         self.assertIn("/superbench/", root)
         self.assertIn("/superbench/figure_tool/", root)
         self.assertIn("/superbench/figure_tool/", overview)
+        self.assertIn("/superbench/mirna/", root)
+        self.assertIn("/superbench/mirna/", overview)
         for forbidden in ("manuscript", "private report", "patient", "unpublished data", "personal research"):
             self.assertNotIn(forbidden, (root + overview).casefold())
         cname = TEMPLATE / "CNAME"

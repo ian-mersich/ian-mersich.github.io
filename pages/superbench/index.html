@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Superbench is a home for practical scientific tools. Figure Tool is currently available.">
+  <meta name="description" content="Superbench scientific tools, including Figure Tool and miRNA Predictor browser editions.">
   <title>Superbench · Ian Mersich</title>
   <link rel="stylesheet" href="/styles.css">
 </head>
@@ -15,6 +15,7 @@
       <div class="nav-links">
         <a href="/">Software home</a>
         <a href="/superbench/figure_tool/">Figure Tool</a>
+        <a href="/superbench/mirna/">miRNA Predictor</a>
       </div>
     </nav>
   </header>
@@ -22,18 +23,27 @@
     <section class="shell page-hero">
       <span class="eyebrow">Scientific software</span>
       <h1>Superbench</h1>
-      <p class="lead">A collection of practical software for making and working with scientific figures.</p>
+      <p class="lead">Scientific tools for working with data, predictions, figures and presentations.</p>
     </section>
     <section class="shell content-grid" aria-label="Available software">
-      <article class="panel">
+      <div class="available-tools">
+        <article class="panel">
         <h2>Figure Tool</h2>
         <p>Build editable scientific figures and presentations with vector drawing tools, page-based workflows, and released scientific assets.</p>
         <p>Portable project files keep authored content available for later editing.</p>
         <a class="action" href="/superbench/figure_tool/">Open Figure Tool</a>
-      </article>
+        </article>
+        <article class="panel">
+          <h2>miRNA Predictor</h2>
+          <p>Estimate the abundance of 465 mature microRNAs from supported RNA-seq expression tables. Review gene coverage, inspect sample-level predictions and miRNA-specific study comparisons, and download the results.</p>
+          <p>Prediction runs in your browser; expression files are not sent to an inference server. Estimates support hypothesis generation and do not replace direct small-RNA measurements.</p>
+          <a class="action" href="/superbench/mirna/">Open miRNA Predictor</a>
+          <p><a href="https://github.com/ian-mersich/ian-mersich.github.io/releases/tag/mirna-predictor-v1.0.0">Source, model and reuse terms <span aria-hidden="true">↗</span></a></p>
+        </article>
+      </div>
       <aside class="panel availability" aria-labelledby="availability-title">
         <h2 id="availability-title">Currently available</h2>
-        <p>Figure Tool is the first tool available through Superbench. More software pages will appear here when they are ready for public use.</p>
+        <p>Figure Tool and miRNA Predictor have standalone browser editions. The miRNA tool is also integrated into the current Superbench development app; an updated installed release is still in preparation.</p>
       </aside>
     </section>
   </main>
