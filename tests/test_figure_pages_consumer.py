@@ -99,14 +99,20 @@ class FigurePagesConsumerTests(unittest.TestCase):
         self.assertEqual(metadata["product_version"], "1.0.0-beta.6")
         self.assertEqual(metadata["archive_sha256"], hashlib.sha256(self.archive.read_bytes()).hexdigest())
 
-    def test_real_template_links_public_tools_and_excludes_private_content(self) -> None:
+    def test_approved_personal_home_links_public_resources_and_excludes_private_pages(self) -> None:
         root = (TEMPLATE / "pages/index.html").read_text(encoding="utf-8")
         overview = (TEMPLATE / "pages/superbench/index.html").read_text(encoding="utf-8")
         self.assertIn("/superbench/", root)
-        self.assertIn("/superbench/figure_tool/", root)
         self.assertIn("/superbench/figure_tool/", overview)
-        self.assertIn("/superbench/mirna/", root)
         self.assertIn("/superbench/mirna/", overview)
+        self.assertIn('id="about-title"', root)
+        self.assertIn('src="assets/ian-mersich-portrait.jpg"', root)
+        self.assertIn('href="/#home-research-title"', root)
+        self.assertIn('https://scholar.google.com/citations?', root)
+        self.assertNotIn("preview-banner", root)
+        for private_page in ("research.html", "software.html", "home-work.html", "home-profile.html"):
+            self.assertFalse((TEMPLATE / "pages" / private_page).exists())
+            self.assertNotIn(f'href="{private_page}"', root)
         for forbidden in ("manuscript", "private report", "patient", "unpublished data", "personal research"):
             self.assertNotIn(forbidden, (root + overview).casefold())
         cname = TEMPLATE / "CNAME"

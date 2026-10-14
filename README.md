@@ -1,6 +1,8 @@
-# Ian Mersich public software website
+# Ian Mersich public website
 
-This repository deploys the public landing page and Superbench overview at `imersich.com`, and consumes accepted Figure Tool and miRNA Predictor browser releases. Site-level identity and attribution use **Ian Mersich**. Personal research pages, manuscript content, private reports, and QA are maintained outside this public repository in the local website workspace.
+This repository deploys Ian Mersich's personal Home and the Superbench overview at `imersich.com`, and consumes accepted Figure Tool and miRNA Predictor browser releases. Site-level identity and attribution use **Ian Mersich**. Ian approved promotion of the selected local Home on 14 October 2026, including its biography, research summary, portrait and profile links. The full Research page, manuscripts, private reports, software previews and QA remain outside this public repository.
+
+Home retains the selected compact white layout. Research navigation opens its research summary; the publications link opens Ian's Google Scholar profile. Resources / Software and Explore the tools open the existing public Superbench overview. Only the four required Home assets were copied from the private preview. The portrait is supplied for display on Ian's website; software licensing does not grant reuse rights to the portrait.
 
 [`config/figure-release.json`](config/figure-release.json) pins the immutable `1.0.0-beta.6` Figure web archive and SHA-256. The builder verifies its bytes and extracts only `superbench/figure_tool/`; it does not follow a floating latest release. [`CNAME`](CNAME) retains the approved `imersich.com` custom domain.
 
