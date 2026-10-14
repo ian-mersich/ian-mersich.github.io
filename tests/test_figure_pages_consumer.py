@@ -99,20 +99,30 @@ class FigurePagesConsumerTests(unittest.TestCase):
         self.assertEqual(metadata["product_version"], "1.0.0-beta.6")
         self.assertEqual(metadata["archive_sha256"], hashlib.sha256(self.archive.read_bytes()).hexdigest())
 
-    def test_approved_personal_home_links_public_resources_and_excludes_private_pages(self) -> None:
+    def test_approved_personal_pages_link_public_resources_and_exclude_other_private_pages(self) -> None:
         root = (TEMPLATE / "pages/index.html").read_text(encoding="utf-8")
         overview = (TEMPLATE / "pages/superbench/index.html").read_text(encoding="utf-8")
-        self.assertIn("/superbench/", root)
+        research = (TEMPLATE / "pages/research.html").read_text(encoding="utf-8")
+        software = (TEMPLATE / "pages/software.html").read_text(encoding="utf-8")
+        self.assertIn('href="/research.html"', root)
+        self.assertIn('href="/software.html"', root)
+        self.assertIn("/superbench/", software)
         self.assertIn("/superbench/figure_tool/", overview)
         self.assertIn("/superbench/mirna/", overview)
         self.assertIn('id="about-title"', root)
         self.assertIn('src="assets/ian-mersich-portrait.jpg"', root)
-        self.assertIn('href="/#home-research-title"', root)
         self.assertIn('https://scholar.google.com/citations?', root)
-        self.assertNotIn("preview-banner", root)
-        for private_page in ("research.html", "software.html", "home-work.html", "home-profile.html"):
+        self.assertIn('id="rna-to-mirna-study"', research)
+        self.assertIn("Manuscript in preparation", research)
+        self.assertIn('href="/research.html#rna-to-mirna-study"', software)
+        self.assertIn('href="/superbench/mirna/"', software)
+        self.assertIn('href="/superbench/figure_tool/"', software)
+        for page in (root, research, software):
+            self.assertNotIn("preview-banner", page)
+            self.assertNotIn("local preview", page)
+        for private_page in ("home-work.html", "home-profile.html", "superbench.html", "figure.html"):
             self.assertFalse((TEMPLATE / "pages" / private_page).exists())
-            self.assertNotIn(f'href="{private_page}"', root)
+            self.assertNotIn(f'href="{private_page}', root + research + software)
         for forbidden in ("manuscript", "private report", "patient", "unpublished data", "personal research"):
             self.assertNotIn(forbidden, (root + overview).casefold())
         cname = TEMPLATE / "CNAME"
