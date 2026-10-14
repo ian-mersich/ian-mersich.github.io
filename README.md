@@ -1,24 +1,24 @@
-# Ian Mersich public website
+# Ian Mersich website
 
-This repository deploys Ian Mersich's personal Home, Research, Resources / Software and the Superbench overview at `imersich.com`, and consumes accepted Figure Tool and miRNA Predictor browser releases. Site-level identity and attribution use **Ian Mersich**. Ian approved promotion of these three personal pages on 14 October 2026. Research includes selected studies, the bibliography and a description of the RNA-to-miRNA manuscript in preparation, without a preprint link. Manuscript files, private reports, other development previews and QA remain outside this public repository.
+Ian Mersich's personal website, with research, publications and scientific software.
 
-The personal pages retain the selected compact white layout, descriptions and publication-status distinctions. Home and the shared navigation open `/research.html` and `/software.html`. Resources links to the public Superbench overview, Figure Tool, miRNA Predictor, HSP90 Atlas and the manuscript description on Research. Local preview banners are removed. The unpublished Figure-guides link is omitted; the learning resources section still explains that guides are in preparation. The pages share the four approved Home assets. The portrait is supplied for display on Ian's website; software licensing does not grant reuse rights to the portrait.
+Visit [imersich.com](https://imersich.com/), explore [Research](https://imersich.com/research.html), or open [Resources / Software](https://imersich.com/software.html). [Figure Tool](https://imersich.com/superbench/figure_tool/) and [miRNA Predictor](https://imersich.com/superbench/mirna/) run in your browser.
 
-[`config/figure-release.json`](config/figure-release.json) pins the immutable `1.0.0-beta.6` Figure web archive and SHA-256. The builder verifies its bytes and extracts only `superbench/figure_tool/`; it does not follow a floating latest release. [`CNAME`](CNAME) retains the approved `imersich.com` custom domain.
+## Build the website
 
-From this repository root:
+This repository contains the personal pages under `pages/` and the GitHub Pages deployment configuration. From the repository root, run:
 
 ```powershell
 python -m unittest discover -s tests
-python scripts/build_site.py
+python scripts/build_site.py --output _site/local-build
 ```
 
-For offline qualification, supply a verified local archive with `python scripts/build_site.py --archive <figure-tool-web.zip>`. Output defaults to the ignored `_site/`; the builder requires a fresh output directory and never overwrites existing output.
+The builder downloads the versioned Figure Tool and miRNA Predictor archives selected in [`config/`](config/), verifies their SHA-256 hashes, and extracts them under `superbench/figure_tool/` and `superbench/mirna/`. It requires a fresh output directory. For an offline build, supply the matching archives with `--archive <figure-tool-web.zip>` and `--mirna-archive <mirna-predictor.zip>`.
 
-The Pages workflow tests the consumer, builds the pinned release, and deploys pushes to `main`. Only this repository's `pages/`, the qualified tool subtree, license, release record, and approved domain enter the build. Local private previews and website coordination files are outside this checkout.
+Pushes to `main` run the tests, build the site and deploy it through GitHub Pages. [`CNAME`](CNAME) configures the `imersich.com` domain. The deployment includes `pages/`, the selected browser-tool releases, their release records and license files.
 
-The miRNA Predictor consumer uses `config/mirna-release.json` when present. It requires publication clearance, an immutable owner GitHub release URL, the accepted P1 model identity, and a SHA-256 pin. Its flat distribution archive is assembled at `superbench/mirna/`; the Figure subtree remains unchanged. Use `python -m unittest discover -s tests` for all consumer checks, and `--mirna-archive <verified-local-zip>` for offline build verification. The release records expose each consumed version and archive digest separately.
+## Tool sources and reuse
 
-Code, fitted-model parameters, and bundled scientific resources retain the distinct license scopes supplied by the tool's accepted release; the website's root license does not relicense them.
+[Figure Tool's source repository](https://github.com/ian-mersich/superbench-figure-tool) contains its editor source and development instructions. The [miRNA Predictor releases](https://github.com/ian-mersich/ian-mersich.github.io/releases) include the browser application, fitted model, study results and their reuse terms. The [HSP90 Atlas](https://github.com/ian-mersich/hsp90-atlas-site) is maintained separately.
 
-The canonical local checkout is `C:\Users\ianme\Desktop\Projects\website\public-site`. Figure Tool implementation and release preparation remain in `C:\Users\ianme\Desktop\Projects\superbench_figure_tool`; the older portable site template is retained in the website workspace's `archive/figure-site-template-beta6/`.
+Website code uses [Apache-2.0](LICENSE). Tool code, model parameters, scientific resources and third-party dependencies retain the separate terms supplied with each release. The portrait is supplied for display on Ian's website; the software license does not grant reuse rights to the portrait.

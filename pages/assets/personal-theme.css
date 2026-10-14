@@ -1,5 +1,4 @@
-/* Private personal-site direction, informed by the restrained layout at hmusta.com.
-   The Superbench product name and HSP90 Atlas remain separate from this site identity. */
+/* Personal website theme. */
 :root {
   --paper: #ffffff;
   --paper-deep: #f7f8f9;
@@ -199,8 +198,6 @@ body[data-preview-page="figure"] main { padding-bottom: 64px; }
   .figure-learning, .availability { padding: 18px 0; }
 }
 
-/* One font family and two type sizes across the private site. The earlier visual
-   studies include many local font declarations; these rules keep the active
-   presentation consistent until the preview CSS is consolidated. */
+/* Consistent typography across the personal pages. */
 body, body * { font-family: var(--sans) !important; font-size: 15px !important; }
 body h1, body h2, body h3 { font-size: 19px !important; }

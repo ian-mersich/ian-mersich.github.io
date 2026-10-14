@@ -1,7 +1,8 @@
 {
   "schema": "figurePagesRelease.v1",
   "product_version": "1.0.0-beta.6",
-  "archive_url": "https://github.com/ian-mersich/superbench-figure-tool/releases/download/v1.0.0-beta.6/figure-tool-web.zip",
-  "archive_sha256": "08f1e11c61f06b711cd609740573737436c9d526358ca49d69dbf1638119dbfe",
-  "archive_root": "superbench/figure_tool"
+  "archive_url": "https://github.com/ian-mersich/superbench-figure-tool/releases/download/v1.0.0-beta.6-docs.1/figure-tool-web.zip",
+  "archive_sha256": "b78a75681d8866520ab34cc9bd1bf45e6de74df3c3a50981e8f5581d293b3eab",
+  "archive_root": "superbench/figure_tool",
+  "documentation_revision": 1
 }

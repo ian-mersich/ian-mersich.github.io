@@ -24,7 +24,7 @@ CONFIG = ROOT / "config" / "figure-release.json"
 LICENSE = ROOT / "LICENSE"
 EXPECTED_URL = (
     "https://github.com/ian-mersich/superbench-figure-tool/releases/download/"
-    "v1.0.0-beta.6/figure-tool-web.zip"
+    "v1.0.0-beta.6-docs.1/figure-tool-web.zip"
 )
 EXPECTED_PREFIX = "superbench/figure_tool"
 MIRNA_DESTINATION = "superbench/mirna"
