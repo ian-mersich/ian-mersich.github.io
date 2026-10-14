@@ -1,9 +1,18 @@
-# Mersich Lab software site
+# Ian Mersich public software website
 
-This public website template contains two product pages: Superbench and Figure Tool. It does not include personal research pages, manuscript content, private reports, local QA evidence, or unpublished scientific assets.
+This repository deploys the public landing page and Superbench overview at `imersich.com`, and consumes the accepted Figure Tool browser release. Site-level identity and attribution use **Ian Mersich**. Personal research pages, manuscript content, private reports, and QA are maintained outside this public repository in the local website workspace.
 
-The Figure Tool page is assembled from the immutable `1.0.0-beta.6` web release at the pinned GitHub release URL in [`config/figure-release.json`](config/figure-release.json). The SHA-256 value in that file must be filled from the exact release ZIP before building or deploying. The builder rejects a pending or malformed digest, verifies the archive bytes, and extracts only the `superbench/figure_tool/` subtree. It does not follow a floating `latest` release.
+[`config/figure-release.json`](config/figure-release.json) pins the immutable `1.0.0-beta.6` Figure web archive and SHA-256. The builder verifies its bytes and extracts only `superbench/figure_tool/`; it does not follow a floating latest release. [`CNAME`](CNAME) retains the approved `imersich.com` custom domain.
 
-This directory is the standalone public-site repository template. From its root, run `python scripts/build_site.py`. For offline qualification, use `python scripts/build_site.py --archive <verified-local-figure-tool-web.zip>`. Both commands require a fresh `_site` output path; existing output is never deleted or overwritten. Generated output is ignored by Git.
+From this repository root:
 
-The Pages workflow builds and tests this template, then deploys it through GitHub Pages when run from the public repository. This source template does not itself publish a release, change DNS, or contain a custom domain file. The template contains no personal research pages, manuscript content, private reports, local QA evidence, or unpublished scientific assets.
+```powershell
+python -m unittest tests.test_figure_pages_consumer
+python scripts/build_site.py
+```
+
+For offline qualification, supply a verified local archive with `python scripts/build_site.py --archive <figure-tool-web.zip>`. Output defaults to the ignored `_site/`; the builder requires a fresh output directory and never overwrites existing output.
+
+The Pages workflow tests the consumer, builds the pinned release, and deploys pushes to `main`. Only this repository's `pages/`, the qualified tool subtree, license, release record, and approved domain enter the build. Local private previews and website coordination files are outside this checkout.
+
+The canonical local checkout is `C:\Users\ianme\Desktop\Projects\website\public-site`. Figure Tool implementation and release preparation remain in `C:\Users\ianme\Desktop\Projects\superbench_figure_tool`; the older portable site template is retained in the website workspace's `archive/figure-site-template-beta6/`.
