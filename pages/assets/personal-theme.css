@@ -63,7 +63,8 @@ h3 { font-size: 16px; font-weight: 680; }
 .home-section a { font-weight: 600; }
 .home-section .home-inline-links { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 8px; }
 
-/* Research and resources retain concise citations and simple section dividers. */
+/* Research and Software share page/header edges and a consistent metadata column. */
+body[data-preview-page="research"], body[data-preview-page="software"] { --max: 1240px; }
 .research-main, .resource-main { width: min(calc(100% - 2 * var(--page-gutter)), 1240px); max-width: none; padding-block: 40px 64px; }
 .superbench-main { width: min(calc(100% - 2 * var(--page-gutter)), var(--max)); }
 .research-heading, .resource-heading { max-width: 800px; }
@@ -71,9 +72,9 @@ h3 { font-size: 16px; font-weight: 680; }
 .research-heading > p:last-child, .resource-heading > p:last-child { color: var(--ink); font-size: 15px; line-height: 1.7; }
 .selected-work, .publications, .resource-list, .resource-guides { margin-top: 34px; padding-top: 18px; border-top: 1px solid var(--line); }
 .study-row a, .resource-entry__links a, .resource-guides a { color: var(--forest); font-weight: 600; }
-.selected-work__heading, .publications__heading { display: flex; justify-content: space-between; gap: 24px; align-items: start; margin-bottom: 12px; }
+.selected-work__heading, .publications__heading { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 24px; align-items: baseline; margin-bottom: 12px; }
 .selected-work__heading h2, .publications__heading h2 { margin: 0; font-size: 20px; }
-.selected-work__heading > p, .publications__heading > p { max-width: 320px; margin: 0; color: var(--muted); font-size: 12px; }
+.selected-work__heading > p, .publications__heading > p { max-width: 72ch; margin: 0; color: var(--muted); font-size: 12px; }
 .study-row { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 24px; padding: 17px 0; border-top: 1px solid var(--line); }
 .study-row__meta { color: var(--muted); font-size: 12px; }
 .study-row h3 { margin: 0 0 5px; font-size: 16px; }
