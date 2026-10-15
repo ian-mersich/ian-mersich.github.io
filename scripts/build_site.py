@@ -31,6 +31,13 @@ SHARED_RELEASE_URL = (
     "https://github.com/ian-mersich/superbench-figure-tool/releases/download/"
     "v1.0.0-beta.9/figure-tool-web.zip"
 )
+SHARED_RELEASE_URLS = {
+    "1.0.0-beta.9": SHARED_RELEASE_URL,
+    "1.0.0-beta.10": (
+        "https://github.com/ian-mersich/superbench-figure-tool/releases/download/"
+        "v1.0.0-beta.10/figure-tool-web.zip"
+    ),
+}
 SHARED_PAYLOAD_ROOTS = ("app/", "vendor/", "assets/scientific-packs/",
                         "assets/scientific-scenes/", "web/")
 SHARED_REQUIRED_FILES = {
@@ -89,11 +96,13 @@ def load_release_config(path: Path = CONFIG) -> dict[str, str]:
         if data.get("archive_url") != EXPECTED_URL or data.get("archive_root") != EXPECTED_PREFIX:
             raise BuildError("Figure release URL or archive root differs from the pinned beta.6 release")
     else:
-        if (data.get("product_version") != "1.0.0-beta.9"
-                or data.get("archive_url") != SHARED_RELEASE_URL
+        version = data.get("product_version")
+        expected_url = SHARED_RELEASE_URLS.get(version) if isinstance(version, str) else None
+        if (expected_url is None
+                or data.get("archive_url") != expected_url
                 or data.get("archive_root") != ""
                 or data.get("destination") != EXPECTED_PREFIX):
-            raise BuildError("Figure shared release layout or identity differs from the beta.9 pin")
+            raise BuildError("Figure shared release layout or identity differs from a pinned beta.9 or beta.10 release")
         for key in ("package_sha256", "payload_tree_sha256", "source_revision"):
             value = data.get(key)
             valid = isinstance(value, str) and (

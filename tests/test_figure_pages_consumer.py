@@ -99,7 +99,8 @@ class FigurePagesConsumerTests(unittest.TestCase):
         self.assertEqual(metadata["product_version"], "1.0.0-beta.6")
         self.assertEqual(metadata["archive_sha256"], hashlib.sha256(self.archive.read_bytes()).hexdigest())
 
-    def shared_release(self, extra: list[tuple[str, bytes, int | None]] | None = None) -> dict[str, bytes]:
+    def shared_release(self, extra: list[tuple[str, bytes, int | None]] | None = None,
+                       *, version: str = "1.0.0-beta.9") -> dict[str, bytes]:
         entries = [(name, (name + " exact shared bytes").encode(), None)
                    for name in sorted(builder.SHARED_REQUIRED_FILES)]
         entries += extra or []
@@ -107,8 +108,8 @@ class FigurePagesConsumerTests(unittest.TestCase):
         ordered = sorted(entries, key=lambda row: row[0].casefold())
         tree = hashlib.sha256("".join(f"{name}\0{hashlib.sha256(content).hexdigest()}\n"
                                      for name, content, _ in ordered).encode()).hexdigest()
-        self.write_config(schema="figurePagesRelease.v2", product_version="1.0.0-beta.9",
-                          archive_url=builder.SHARED_RELEASE_URL, archive_root="",
+        self.write_config(schema="figurePagesRelease.v2", product_version=version,
+                          archive_url=builder.SHARED_RELEASE_URLS[version], archive_root="",
                           destination=builder.EXPECTED_PREFIX, source_revision="a" * 40,
                           package_sha256="b" * 64, payload_tree_sha256=tree)
         return {name: content for name, content, _ in entries}
@@ -126,6 +127,31 @@ class FigurePagesConsumerTests(unittest.TestCase):
         self.assertEqual(metadata["source_revision"], "a" * 40)
         self.assertEqual(metadata["payload_file_count"], len(expected))
         self.assertEqual(json.loads((output / "FIGURE_RELEASE.json").read_text())["package_sha256"], "b" * 64)
+
+    def test_beta10_shared_release_preserves_every_payload_byte_and_version(self) -> None:
+        expected = self.shared_release(version="1.0.0-beta.10")
+        output = self.build()
+        tool = output / builder.EXPECTED_PREFIX
+        for name, content in expected.items():
+            self.assertEqual((tool / name).read_bytes(), content)
+        metadata = json.loads((tool / "SOURCE_RELEASE.json").read_text())
+        self.assertEqual(metadata["product_version"], "1.0.0-beta.10")
+        self.assertEqual(metadata["package_sha256"], "b" * 64)
+        self.assertEqual(metadata["payload_file_count"], len(expected))
+
+    def test_shared_release_rejects_mixed_version_urls_and_unreviewed_versions(self) -> None:
+        self.shared_release()
+        valid = json.loads(self.config.read_text())
+        for version, url in [
+            ("1.0.0-beta.9", builder.SHARED_RELEASE_URLS["1.0.0-beta.10"]),
+            ("1.0.0-beta.10", builder.SHARED_RELEASE_URLS["1.0.0-beta.9"]),
+            ("1.0.0-beta.11", builder.SHARED_RELEASE_URLS["1.0.0-beta.10"]),
+            (None, builder.SHARED_RELEASE_URLS["1.0.0-beta.10"]),
+        ]:
+            with self.subTest(version=version, url=url):
+                self.config.write_text(json.dumps(dict(valid, product_version=version, archive_url=url)))
+                with self.assertRaisesRegex(builder.BuildError, "pinned beta.9 or beta.10"):
+                    builder.load_release_config(self.config)
 
     def test_shared_release_rejects_tree_drift_and_files_outside_payload(self) -> None:
         self.shared_release()
