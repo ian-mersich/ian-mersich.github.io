@@ -5,53 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Superbench scientific tools, including Figure Tool and miRNA Predictor browser editions.">
   <title>Superbench · Ian Mersich</title>
-  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/assets/preview.css">
+  <link rel="stylesheet" href="/assets/personal-theme.css?v=20261014-alignment">
+  <link rel="stylesheet" href="/assets/superbench.css?v=20261015">
 </head>
-<body>
+<body class="superbench-overview" data-preview-page="superbench-overview">
   <a class="skip-link" href="#main">Skip to content</a>
-  <header class="site-header">
-    <nav class="shell nav" aria-label="Primary">
-      <a class="brand" href="/" aria-label="Ian Mersich home"><span class="brand-mark" aria-hidden="true">S</span>Superbench</a>
-      <div class="nav-links">
-        <a href="/">Home</a>
-        <a href="/superbench/figure_tool/">Figure Tool</a>
-        <a href="/superbench/mirna/">miRNA Predictor</a>
-      </div>
-    </nav>
-  </header>
-  <main id="main">
-    <section class="shell page-hero">
-      <span class="eyebrow">Scientific software</span>
+  <header class="site-header"><div class="site-header__inner"><a class="wordmark" href="/" aria-label="Ian Mersich home"><span class="wordmark__text"><strong>Ian Mersich</strong></span></a><nav class="primary-nav" aria-label="Primary navigation"><a href="/">Home</a><a href="/research.html">Research</a><a aria-current="location" href="/software.html">Resources / Software</a><a href="https://ian-mersich.github.io/hsp90-atlas-site/">HSP90 Atlas <span aria-hidden="true">↗</span></a></nav></div></header>
+  <main id="main" class="resource-main shell">
+    <header class="resource-heading">
+      <p class="kicker"><a href="/software.html">Resources / Software</a></p>
       <h1>Superbench</h1>
-      <p class="lead">Scientific tools for working with data, predictions, figures and presentations.</p>
-    </section>
-    <section class="shell content-grid" aria-label="Available software">
-      <div class="available-tools">
-        <article class="panel">
-        <h2>Figure Tool</h2>
-        <p>Build editable scientific figures and presentations with vector drawing tools, page-based workflows, and released scientific assets.</p>
-        <p>Portable project files keep authored content available for later editing.</p>
-        <a class="action" href="/superbench/figure_tool/">Open Figure Tool</a>
+      <p>Open the browser editions of Figure Tool and miRNA Predictor. Superbench’s desktop workspace is in development.</p>
+    </header>
+
+    <section id="browser-tools" class="browser-tools-section" aria-labelledby="browser-tools-title">
+      <div class="browser-tools-heading"><h2 id="browser-tools-title">Open a browser tool</h2><p>No installation required.</p></div>
+      <div class="browser-tools-grid">
+        <article class="browser-tool" aria-labelledby="figure-tool-title">
+          <div class="browser-tool__heading"><img class="browser-tool__illustration" src="/assets/superbench/figure-tool.svg" width="176" height="112" alt=""><div><p class="browser-tool__category">Scientific figures &amp; presentations</p><h3 id="figure-tool-title">Figure Tool</h3></div></div>
+          <div class="browser-tool__copy">
+            <p>Create editable figures and presentations from plots, images, text and vector artwork. Save portable project files and export SVG, PNG or PDF.</p>
+            <p class="browser-tool__note">Work is stored in the current browser. Download project files to keep portable copies or move between devices.</p>
+          </div>
+          <div class="browser-tool__actions"><a class="tool-open" href="/superbench/figure_tool/">Open Figure Tool <span aria-hidden="true">→</span></a><div class="browser-tool__secondary"><a href="https://github.com/ian-mersich/superbench-figure-tool/releases/tag/v1.0.0-beta.6-docs.1">Source &amp; downloads <span aria-hidden="true">↗</span></a></div></div>
         </article>
-        <article class="panel">
-          <h2>miRNA Predictor</h2>
-          <p>Estimate the abundance of 465 mature microRNAs from supported RNA-seq expression tables. Review gene coverage, inspect sample-level predictions and miRNA-specific study comparisons, and download the results.</p>
-          <p>Prediction runs in your browser; expression files are not sent to an inference server. Estimates support hypothesis generation and do not replace direct small-RNA measurements.</p>
-          <a class="action" href="/superbench/mirna/">Open miRNA Predictor</a>
-          <p><a href="https://github.com/ian-mersich/ian-mersich.github.io/releases/tag/mirna-predictor-v1.0.2">Source, model and reuse terms <span aria-hidden="true">↗</span></a></p>
+        <article class="browser-tool" aria-labelledby="mirna-tool-title">
+          <div class="browser-tool__heading"><img class="browser-tool__illustration" src="/assets/superbench/mirna-predictor.svg" width="176" height="112" alt=""><div><p class="browser-tool__category">RNA-seq expression &amp; miRNA prediction</p><h3 id="mirna-tool-title">miRNA Predictor</h3></div></div>
+          <div class="browser-tool__copy">
+            <p>Estimate the abundance of 465 mature miRNAs from supported RNA-seq expression tables. Review input coverage, inspect predictions and study comparisons, and download results.</p>
+            <p class="browser-tool__note">Expression files stay on your device. Estimates support hypothesis generation and do not replace direct mature-miRNA measurement.</p>
+          </div>
+          <div class="browser-tool__actions"><a class="tool-open" href="/superbench/mirna/">Open miRNA Predictor <span aria-hidden="true">→</span></a><div class="browser-tool__secondary"><a href="/research.html#rna-to-mirna-study">About the study <span aria-hidden="true">→</span></a><a href="https://github.com/ian-mersich/ian-mersich.github.io/releases/tag/mirna-predictor-v1.0.2">Source, model &amp; reuse terms <span aria-hidden="true">↗</span></a></div></div>
         </article>
       </div>
-      <aside class="panel availability" aria-labelledby="availability-title">
-        <h2 id="availability-title">Currently available</h2>
-        <p>Figure Tool and miRNA Predictor have standalone browser editions. The miRNA tool is also integrated into the current Superbench development app; an updated installed release is still in preparation.</p>
-      </aside>
+    </section>
+
+    <section id="desktop-workspace" class="desktop-workspace" aria-labelledby="desktop-title">
+      <div><h2 id="desktop-title">Desktop workspace</h2><p class="workspace-status">In development</p></div>
+      <div><p>Superbench brings data preparation, analysis, figures and presentations into one saved project. The miRNA predictor is also integrated into the development app. A public desktop installer is not yet available.</p><a href="/software.html#superbench-title">About the desktop workspace <span aria-hidden="true">→</span></a></div>
     </section>
   </main>
-  <footer class="footer">
-    <div class="shell footer-inner">
-      <p>Scientific software by Ian Mersich.</p>
-      <a href="/">Home</a>
-    </div>
-  </footer>
 </body>
 </html>
