@@ -99,6 +99,58 @@ class FigurePagesConsumerTests(unittest.TestCase):
         self.assertEqual(metadata["product_version"], "1.0.0-beta.6")
         self.assertEqual(metadata["archive_sha256"], hashlib.sha256(self.archive.read_bytes()).hexdigest())
 
+    def shared_release(self, extra: list[tuple[str, bytes, int | None]] | None = None) -> dict[str, bytes]:
+        entries = [(name, (name + " exact shared bytes").encode(), None)
+                   for name in sorted(builder.SHARED_REQUIRED_FILES)]
+        entries += extra or []
+        self.archive.write_bytes(zip_bytes(entries))
+        ordered = sorted(entries, key=lambda row: row[0].casefold())
+        tree = hashlib.sha256("".join(f"{name}\0{hashlib.sha256(content).hexdigest()}\n"
+                                     for name, content, _ in ordered).encode()).hexdigest()
+        self.write_config(schema="figurePagesRelease.v2", product_version="1.0.0-beta.9",
+                          archive_url=builder.SHARED_RELEASE_URL, archive_root="",
+                          destination=builder.EXPECTED_PREFIX, source_revision="a" * 40,
+                          package_sha256="b" * 64, payload_tree_sha256=tree)
+        return {name: content for name, content, _ in entries}
+
+    def test_shared_release_mounts_every_payload_byte_and_retains_release_identity(self) -> None:
+        expected = self.shared_release([("assets/scientific-packs/family/old.svg", b"<svg/>", None)])
+        output = self.build()
+        tool = output / builder.EXPECTED_PREFIX
+        for name, content in expected.items():
+            self.assertEqual((tool / name).read_bytes(), content)
+        self.assertIn('location.replace("web/"+location.search+location.hash)', (tool / "index.html").read_text())
+        self.assertEqual((tool / "LICENSE").read_bytes(), expected["app/legal/LICENSE"])
+        metadata = json.loads((tool / "SOURCE_RELEASE.json").read_text())
+        self.assertEqual(metadata["package_sha256"], "b" * 64)
+        self.assertEqual(metadata["source_revision"], "a" * 40)
+        self.assertEqual(metadata["payload_file_count"], len(expected))
+        self.assertEqual(json.loads((output / "FIGURE_RELEASE.json").read_text())["package_sha256"], "b" * 64)
+
+    def test_shared_release_rejects_tree_drift_and_files_outside_payload(self) -> None:
+        self.shared_release()
+        config = json.loads(self.config.read_text())
+        config["payload_tree_sha256"] = "0" * 64
+        self.config.write_text(json.dumps(config))
+        with self.assertRaisesRegex(builder.BuildError, "desktop release tree"):
+            self.build()
+        self.shared_release([("unexpected.html", b"different runtime", None)])
+        with self.assertRaisesRegex(builder.BuildError, "outside the shared payload roots"):
+            self.build()
+
+    def test_shared_release_requires_complete_pinned_identity_and_fixed_mount(self) -> None:
+        self.shared_release()
+        valid = json.loads(self.config.read_text())
+        for field, invalid in [("source_revision", "bad"), ("package_sha256", None),
+                               ("payload_tree_sha256", "c" * 63), ("destination", "other"),
+                               ("archive_root", builder.EXPECTED_PREFIX),
+                               ("archive_url", "https://example.com/latest.zip")]:
+            with self.subTest(field=field):
+                changed = dict(valid, **{field: invalid})
+                self.config.write_text(json.dumps(changed))
+                with self.assertRaises(builder.BuildError):
+                    self.build()
+
     def test_approved_personal_pages_link_public_resources_and_exclude_other_private_pages(self) -> None:
         root = (TEMPLATE / "pages/index.html").read_text(encoding="utf-8")
         overview = (TEMPLATE / "pages/superbench/index.html").read_text(encoding="utf-8")
@@ -108,6 +160,8 @@ class FigurePagesConsumerTests(unittest.TestCase):
         self.assertIn('href="/software.html"', root)
         self.assertIn("/superbench/", software)
         self.assertIn("/superbench/figure_tool/", overview)
+        selected_figure = json.loads((TEMPLATE / "config/figure-release.json").read_text(encoding="utf-8"))
+        self.assertIn("/releases/tag/v" + selected_figure["product_version"], overview)
         self.assertIn("/superbench/mirna/", overview)
         self.assertIn('id="about-title"', root)
         self.assertIn('src="assets/ian-mersich-portrait.jpg"', root)

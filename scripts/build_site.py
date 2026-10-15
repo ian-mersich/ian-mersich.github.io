@@ -27,6 +27,17 @@ EXPECTED_URL = (
     "v1.0.0-beta.6-docs.1/figure-tool-web.zip"
 )
 EXPECTED_PREFIX = "superbench/figure_tool"
+SHARED_RELEASE_URL = (
+    "https://github.com/ian-mersich/superbench-figure-tool/releases/download/"
+    "v1.0.0-beta.9/figure-tool-web.zip"
+)
+SHARED_PAYLOAD_ROOTS = ("app/", "vendor/", "assets/scientific-packs/",
+                        "assets/scientific-scenes/", "web/")
+SHARED_REQUIRED_FILES = {
+    "app/index.html", "app/app.js", "app/styles.css", "web/index.html",
+    "vendor/manifest.json", "assets/scientific-packs/library.json",
+    "assets/scientific-scenes/library.v1.json", "app/legal/LICENSE", "app/legal/NOTICE",
+}
 MIRNA_DESTINATION = "superbench/mirna"
 MIRNA_REQUIRED_FILES = {
     "index.html", "browser-worker.mjs", "browser-runtime.mjs",
@@ -70,16 +81,62 @@ def load_release_config(path: Path = CONFIG) -> dict[str, str]:
         data = json.loads(_fs(path).read_text(encoding="utf-8"))
     except (OSError, UnicodeError, json.JSONDecodeError) as exc:
         raise BuildError(f"Cannot read Figure release config: {exc}") from exc
-    if not isinstance(data, dict) or data.get("schema") != "figurePagesRelease.v1":
+    if not isinstance(data, dict) or data.get("schema") not in {"figurePagesRelease.v1", "figurePagesRelease.v2"}:
         raise BuildError("Unsupported Figure Pages release config schema")
-    if data.get("product_version") != "1.0.0-beta.6":
-        raise BuildError("Pages consumer is pinned to Figure Tool 1.0.0-beta.6")
-    if data.get("archive_url") != EXPECTED_URL or data.get("archive_root") != EXPECTED_PREFIX:
-        raise BuildError("Figure release URL or archive root differs from the pinned beta.6 release")
+    if data["schema"] == "figurePagesRelease.v1":
+        if data.get("product_version") != "1.0.0-beta.6":
+            raise BuildError("Pages consumer is pinned to Figure Tool 1.0.0-beta.6")
+        if data.get("archive_url") != EXPECTED_URL or data.get("archive_root") != EXPECTED_PREFIX:
+            raise BuildError("Figure release URL or archive root differs from the pinned beta.6 release")
+    else:
+        if (data.get("product_version") != "1.0.0-beta.9"
+                or data.get("archive_url") != SHARED_RELEASE_URL
+                or data.get("archive_root") != ""
+                or data.get("destination") != EXPECTED_PREFIX):
+            raise BuildError("Figure shared release layout or identity differs from the beta.9 pin")
+        for key in ("package_sha256", "payload_tree_sha256", "source_revision"):
+            value = data.get(key)
+            valid = isinstance(value, str) and (
+                re.fullmatch(r"[0-9a-f]{40}|[0-9a-f]{64}", value) if key == "source_revision"
+                else re.fullmatch(r"[0-9a-f]{64}", value))
+            if not valid:
+                raise BuildError(f"Figure shared release {key} is missing or malformed")
     digest = data.get("archive_sha256")
     if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest):
         raise BuildError("Figure release archive SHA-256 is pending or malformed")
     return data
+
+
+def _mount_shared_figure(archive: Path, site: Path, config: dict[str, str]) -> None:
+    """Mount the producer's unchanged web payload and verify desktop parity."""
+    destination = site / EXPECTED_PREFIX
+    _fs(destination).mkdir(parents=True, exist_ok=False)
+    _extract_verified(archive, destination, archive_root="", required_files=SHARED_REQUIRED_FILES)
+    inventory = []
+    for path in sorted(_fs(destination).rglob("*"), key=lambda p: p.relative_to(_fs(destination)).as_posix().casefold()):
+        if not path.is_file():
+            continue
+        relative = path.relative_to(_fs(destination)).as_posix()
+        if not relative.startswith(SHARED_PAYLOAD_ROOTS):
+            raise BuildError(f"Figure file is outside the shared payload roots: {relative}")
+        inventory.append((relative, _sha256(path)))
+    tree = hashlib.sha256("".join(f"{name}\0{digest}\n" for name, digest in inventory).encode("utf-8")).hexdigest()
+    if tree != config["payload_tree_sha256"]:
+        raise BuildError("Figure web payload differs from the desktop release tree")
+    # Hosting-only files sit outside all five payload roots. Never flatten web/
+    # or rewrite app, assets or vendor files to create a second editor build.
+    _fs(destination / "index.html").write_text(
+        '<!doctype html><html lang="en"><meta charset="utf-8">'
+        '<title>Superbench Figure Tool</title><meta http-equiv="refresh" content="0;url=web/">'
+        '<script>location.replace("web/"+location.search+location.hash)</script>'
+        '<a href="web/">Open Figure Tool</a></html>\n', encoding="utf-8", newline="\n")
+    for name in ("LICENSE", "NOTICE"):
+        shutil.copyfile(_fs(destination / "app/legal" / name), _fs(destination / name))
+    _fs(destination / "SOURCE_RELEASE.json").write_text(json.dumps({
+        "product_version": config["product_version"], "source_revision": config["source_revision"],
+        "package_sha256": config["package_sha256"], "payload_tree_sha256": tree,
+        "archive_sha256": config["archive_sha256"], "payload_file_count": len(inventory),
+    }, indent=2) + "\n", encoding="utf-8", newline="\n")
 
 
 def load_mirna_release_config(path: Path) -> dict[str, str]:
@@ -284,7 +341,10 @@ def build_site(
 
         site = stage / "site"
         shutil.copytree(_fs(pages_dir), _fs(site))
-        _extract_verified(archive, site)
+        if config["schema"] == "figurePagesRelease.v2":
+            _mount_shared_figure(archive, site, config)
+        else:
+            _extract_verified(archive, site)
         if mirna_config is not None:
             mirna_archive = stage / "mirna-predictor-web.zip"
             if mirna_archive_path is None:
@@ -325,8 +385,11 @@ def build_site(
             )
         shutil.copyfile(_fs(license_path), _fs(site / "LICENSE"))
         _fs(site / ".nojekyll").write_text("", encoding="utf-8")
+        release_metadata = {"product_version": config["product_version"], "archive_sha256": actual_digest}
+        if config["schema"] == "figurePagesRelease.v2":
+            release_metadata.update({key: config[key] for key in ("source_revision", "package_sha256", "payload_tree_sha256")})
         _fs(site / "FIGURE_RELEASE.json").write_text(
-            json.dumps({"product_version": config["product_version"], "archive_sha256": actual_digest}, indent=2) + "\n",
+            json.dumps(release_metadata, indent=2) + "\n",
             encoding="utf-8",
         )
         if cname_content is not None:
