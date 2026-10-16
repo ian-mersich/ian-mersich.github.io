@@ -128,16 +128,18 @@ class FigurePagesConsumerTests(unittest.TestCase):
         self.assertEqual(metadata["payload_file_count"], len(expected))
         self.assertEqual(json.loads((output / "FIGURE_RELEASE.json").read_text())["package_sha256"], "b" * 64)
 
-    def test_beta10_shared_release_preserves_every_payload_byte_and_version(self) -> None:
-        expected = self.shared_release(version="1.0.0-beta.10")
-        output = self.build()
-        tool = output / builder.EXPECTED_PREFIX
-        for name, content in expected.items():
-            self.assertEqual((tool / name).read_bytes(), content)
-        metadata = json.loads((tool / "SOURCE_RELEASE.json").read_text())
-        self.assertEqual(metadata["product_version"], "1.0.0-beta.10")
-        self.assertEqual(metadata["package_sha256"], "b" * 64)
-        self.assertEqual(metadata["payload_file_count"], len(expected))
+    def test_reviewed_shared_releases_preserve_every_payload_byte_and_version(self) -> None:
+        for version in ("1.0.0-beta.10", "1.0.0-beta.11"):
+            with self.subTest(version=version):
+                expected = self.shared_release(version=version)
+                output = self.build(output=self.website / version)
+                tool = output / builder.EXPECTED_PREFIX
+                for name, content in expected.items():
+                    self.assertEqual((tool / name).read_bytes(), content)
+                metadata = json.loads((tool / "SOURCE_RELEASE.json").read_text())
+                self.assertEqual(metadata["product_version"], version)
+                self.assertEqual(metadata["package_sha256"], "b" * 64)
+                self.assertEqual(metadata["payload_file_count"], len(expected))
 
     def test_shared_release_rejects_mixed_version_urls_and_unreviewed_versions(self) -> None:
         self.shared_release()
@@ -146,11 +148,13 @@ class FigurePagesConsumerTests(unittest.TestCase):
             ("1.0.0-beta.9", builder.SHARED_RELEASE_URLS["1.0.0-beta.10"]),
             ("1.0.0-beta.10", builder.SHARED_RELEASE_URLS["1.0.0-beta.9"]),
             ("1.0.0-beta.11", builder.SHARED_RELEASE_URLS["1.0.0-beta.10"]),
+            ("1.0.0-beta.10", builder.SHARED_RELEASE_URLS["1.0.0-beta.11"]),
+            ("1.0.0-beta.12", builder.SHARED_RELEASE_URLS["1.0.0-beta.11"]),
             (None, builder.SHARED_RELEASE_URLS["1.0.0-beta.10"]),
         ]:
             with self.subTest(version=version, url=url):
                 self.config.write_text(json.dumps(dict(valid, product_version=version, archive_url=url)))
-                with self.assertRaisesRegex(builder.BuildError, "pinned beta.9 or beta.10"):
+                with self.assertRaisesRegex(builder.BuildError, "pinned reviewed release"):
                     builder.load_release_config(self.config)
 
     def test_shared_release_rejects_tree_drift_and_files_outside_payload(self) -> None:
