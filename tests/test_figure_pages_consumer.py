@@ -129,7 +129,7 @@ class FigurePagesConsumerTests(unittest.TestCase):
         self.assertEqual(json.loads((output / "FIGURE_RELEASE.json").read_text())["package_sha256"], "b" * 64)
 
     def test_reviewed_shared_releases_preserve_every_payload_byte_and_version(self) -> None:
-        for version in ("1.0.0-beta.10", "1.0.0-beta.11"):
+        for version in ("1.0.0-beta.10", "1.0.0-beta.11", "1.0.0-beta.12"):
             with self.subTest(version=version):
                 expected = self.shared_release(version=version)
                 output = self.build(output=self.website / version)
@@ -150,6 +150,7 @@ class FigurePagesConsumerTests(unittest.TestCase):
             ("1.0.0-beta.11", builder.SHARED_RELEASE_URLS["1.0.0-beta.10"]),
             ("1.0.0-beta.10", builder.SHARED_RELEASE_URLS["1.0.0-beta.11"]),
             ("1.0.0-beta.12", builder.SHARED_RELEASE_URLS["1.0.0-beta.11"]),
+            ("1.0.0-beta.13", builder.SHARED_RELEASE_URLS["1.0.0-beta.12"]),
             (None, builder.SHARED_RELEASE_URLS["1.0.0-beta.10"]),
         ]:
             with self.subTest(version=version, url=url):
