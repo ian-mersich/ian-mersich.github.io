@@ -45,6 +45,12 @@ h3 { font-size: 16px; font-weight: 680; }
 .primary-nav a[aria-current="page"]::after { display: none; }
 /* Home uses the available width for profiles, biography, and a larger portrait. */
 .home-main { width: min(calc(100% - 2 * var(--page-gutter)), var(--max)); display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 48px; padding-block: 42px 64px; }
+/* Keep Home's identity column near the left edge even on ultrawide displays.
+   The biography and portrait retain their reading width beside that column. */
+@media (min-width: 801px) {
+  body[data-preview-page="home"] .site-header__inner,
+  body[data-preview-page="home"] .home-main { margin-inline: var(--page-gutter) auto; }
+}
 .profile-summary { min-width: 0; color: var(--muted); }
 .profile-summary__label { margin: 0; padding-bottom: 7px; border-bottom: 1px solid var(--line); color: var(--ink); font-weight: 700; }
 .profile-summary nav { display: grid; }
@@ -79,6 +85,13 @@ body[data-preview-page="research"], body[data-preview-page="software"] { --max: 
 .study-row h3 { margin: 0 0 5px; font-size: 16px; }
 .study-row p { margin: 0 0 7px; color: var(--ink); font-size: 13px; }
 .study-row a { font-size: 13px; }
+.study-links { display: flex; flex-wrap: wrap; gap: 7px 22px; margin-top: 12px; }
+.study-figure { margin: 20px 0 8px; max-width: 850px; }
+.study-figure img { display: block; width: 100%; height: auto; }
+.study-figure figcaption { margin-top: 12px; max-width: 72ch; color: var(--muted); }
+.study-detail { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 30px; align-items: start; }
+.study-detail .study-figure { margin-top: 4px; }
+.study-detail .study-figure figcaption { line-height: 1.55; }
 .publications > h3 { margin: 24px 0 7px; font-size: 16px; }
 .publication-list, .other-work ul { margin: 0; padding: 0; list-style: none; }
 .publication-list li, .other-work li { padding: 13px 0; border-top: 1px solid var(--line); font-size: 13px; }
@@ -163,6 +176,8 @@ body[data-preview-page="figure"] main { padding-bottom: 64px; }
 }
 
 @media (max-width: 800px) {
+  .study-detail { grid-template-columns: 1fr; gap: 12px; }
+  .study-detail .study-figure { max-width: 330px; }
   .site-header__inner { align-items: flex-start; flex-direction: column; justify-content: center; gap: 5px; padding-block: 9px; }
   .primary-nav { flex-wrap: wrap; gap: 3px 17px; }
   .home-main { grid-template-columns: 1fr; gap: 23px; }
