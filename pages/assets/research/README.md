@@ -17,17 +17,23 @@ terms. The website's plotting source is maintained in its coordinating workspace
 
 ## Rosiglitazone and vincristine response
 
-`iscience-figure6.jpg` reproduces the original Figure 6 image from:
+`iscience-graphical-abstract.jpg` and `iscience-figure6-hires.jpg` reproduce the
+publisher's graphical abstract and high-resolution Figure 6 from:
 
 Mersich I, Blagg BSJ, Ali A. Multi-omic integration identifies broad drug resistance
 mechanisms and strategies to therapeutically reprogram cancer cells. *iScience*.
 2026;29(1):114293. [doi:10.1016/j.isci.2025.114293](https://doi.org/10.1016/j.isci.2025.114293).
 
-Original image: https://cdn.ncbi.nlm.nih.gov/pmc/blobs/3243/12765193/226e56d20d1f/gr6.jpg
+Original graphical abstract: https://ars.els-cdn.com/content/image/1-s2.0-S2589004225025544-fx1_lrg.jpg
+
+Original Figure 6: https://ars.els-cdn.com/content/image/1-s2.0-S2589004225025544-gr6_lrg.jpg
 
 Copyright 2025 The Authors. Reproduced under
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
-`rosiglitazone-response.svg` embeds that unchanged image and selects panels G–J
-with an SVG viewBox. The other panels are omitted; the selected plots, labels
-and data are unchanged. The website caption supplies experimental conditions,
-replication and the link to the complete published figure and legend.
+`drug-resistance-computational-to-experimental.svg` places the computational
+portion of the graphical abstract beside Figure 6G–J. A labeled arrow identifies
+rosiglitazone as a compound selected for experimental testing. SVG viewBoxes omit
+the abstract's illustrative heatmap and the other Figure 6 panels. All source
+pixels, selected plots, labels and data are unchanged. The website caption
+supplies experimental conditions, replication and the link to the complete
+published figure and legend.
