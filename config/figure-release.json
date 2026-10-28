@@ -1,11 +1,11 @@
 {
   "schema": "figurePagesRelease.v2",
-  "product_version": "1.0.0-beta.16",
-  "archive_url": "https://github.com/ian-mersich/superbench-figure-tool/releases/download/v1.0.0-beta.16/figure-tool-web.zip",
-  "archive_sha256": "fd69ee391746686c6046086f3686a4ba17d2e56c804421698c2460633a451d17",
+  "product_version": "1.0.0-beta.17",
+  "archive_url": "https://github.com/ian-mersich/superbench-figure-tool/releases/download/v1.0.0-beta.17/figure-tool-web.zip",
+  "archive_sha256": "d40a90981eb2eda373248db40959bc367bb96ca103b9910d532eccc7fb779804",
   "archive_root": "",
   "destination": "superbench/figure_tool",
-  "source_revision": "d170100675e2ed96dffccc2fd6ae3cd207a8c484",
-  "package_sha256": "ceec84e7e18bd0945a99874817b9ff59f444ffa001eb87fa49b6a8c6587ce54d",
-  "payload_tree_sha256": "d8a02f8b5c44fcfab4061c15d7cc1404e344f61a20e635074d3cfed81cdbdcb0"
+  "source_revision": "ee9d93b3bb4046baa7b813fb4de101c502580987",
+  "package_sha256": "0785441149099c46d90daed76ff1a7bf85170e7d1e22ffd7d7372dd725e025b0",
+  "payload_tree_sha256": "79ef49f0d017f2c2d32da8402dead3e8ecae0bba6e4926acf96902f6cc795bcb"
 }
