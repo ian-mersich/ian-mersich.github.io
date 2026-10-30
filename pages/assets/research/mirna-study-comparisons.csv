@@ -1,0 +1,10 @@
+panel,procedure,mean_spearman,lower_95,upper_95,specimens,groups,shared_miRNAs,defined_miRNAs,aggregation,source
+TCGA,Locus only,0.3007953366881048,,,10944,33,,464-474 outputs per fit,Mean per-miRNA correlation in pooled cancer-excluded predictions,figure_source_tables/narrative_revision/main_sources/display_sources/F1B_INITIAL_LOCO_SAVED_AGGREGATE_VALUES.tsv
+TCGA,Coding only,0.5044021933698999,,,10944,33,,464-474 outputs per fit,Mean per-miRNA correlation in pooled cancer-excluded predictions,figure_source_tables/narrative_revision/main_sources/display_sources/F1B_INITIAL_LOCO_SAVED_AGGREGATE_VALUES.tsv
+TCGA,Coding + locus,0.5349479525955321,,,10944,33,,464-474 outputs per fit,Mean per-miRNA correlation in pooled cancer-excluded predictions,figure_source_tables/narrative_revision/main_sources/display_sources/F1B_INITIAL_LOCO_SAVED_AGGREGATE_VALUES.tsv
+CPTAC-3,P1,0.488689211896301,0.4775753659634043,0.4941398606159252,1658,10,458,454-458 per cancer group,Correlations within each cancer group; cancer groups weighted equally,diagnostics/cptac_public_p1/POINT_SUMMARIES.csv
+CPTAC-3,SiCmiR,0.39764329818187794,0.38612260270963705,0.404245897217704,1658,10,458,454-458 per cancer group,Correlations within each cancer group; cancer groups weighted equally,diagnostics/cptac_public_p1/POINT_SUMMARIES.csv
+Liver,P1,0.42566580313399605,0.37128728457331567,0.466792872539781,32,1,458,438,Mean over 438 miRNAs with correlation defined for all four procedures,diagnostics/liver_correlations/POINT_SUMMARIES.csv
+Liver,P2,0.42514961005951685,0.36858108644739485,0.4683802144139852,32,1,458,438,Mean over 438 miRNAs with correlation defined for all four procedures,diagnostics/liver_correlations/POINT_SUMMARIES.csv
+Liver,Hallmark kernel,0.3519747985046422,0.29721283780358854,0.397607329321783,32,1,458,438,Mean over 438 miRNAs with correlation defined for all four procedures,diagnostics/liver_correlations/POINT_SUMMARIES.csv
+Liver,SiCmiR,0.29901212813914946,0.23158444911795262,0.35052951882272015,32,1,458,438,Mean over 438 miRNAs with correlation defined for all four procedures,diagnostics/liver_correlations/POINT_SUMMARIES.csv

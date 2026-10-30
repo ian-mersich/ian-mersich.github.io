@@ -64,7 +64,7 @@ h3 { font-size: 16px; font-weight: 680; }
 .home-intro h1, .home-section h2 { margin: 0 0 11px; padding-bottom: 7px; border-bottom: 1px solid var(--line); font-size: 20px; }
 .home-intro p, .home-section p { margin: 0 0 14px; color: var(--ink); font-size: 15px; line-height: 1.7; }
 .home-intro p { max-width: 84ch; }
-.home-section { margin-top: 34px; }
+.home-section { max-width: 84ch; margin-top: 34px; }
 .home-section a { font-weight: 600; }
 .home-section .home-inline-links { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 8px; }
 
@@ -168,7 +168,7 @@ body[data-preview-page="figure"] main { padding-bottom: 64px; }
 .profile-home__lead { font-size: 16px; }
 
 @media (min-width: 1200px) {
-  .personal-content { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 44px; align-items: start; }
+  .personal-content { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; }
   .home-intro { grid-column: 1 / -1; }
   .home-section { margin-top: 38px; }
 }

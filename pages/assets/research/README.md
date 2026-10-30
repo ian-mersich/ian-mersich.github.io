@@ -2,6 +2,29 @@
 
 These assets illustrate two projects described on the Research page.
 
+## miRNA modeling and performance comparisons
+
+`mirna-study-overview.svg` summarizes Ian Mersich's RNA-seq-to-mature-miRNA
+study from the 23 October 2026 manuscript and scientific companion 1.16.2.
+The manuscript is in preparation and has not been posted. Original artwork
+and results are supplied by Ian Mersich under
+[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+
+`mirna-study-comparisons.csv` contains the nine displayed means, six available
+95% bootstrap intervals, populations, miRNA coverage and source-table
+identifiers. TCGA compares original ridge gene-input models in pooled
+cancer-excluded predictions. CPTAC-3 and liver compare final procedures within
+their own populations. The final P1 fit is the released browser model, but the
+app's Study results page retains earlier comparisons and miRNA sets.
+
+CPTAC-3 cancer groups receive equal weight; its intervals use 2,000 within-cancer
+case resamples. Liver intervals use 10,000 resamples of 16 depositor-order
+tumor–adjacent pairs; patient pairing was not independently verified. Both
+cohorts had been examined during development. SiCmiR's standardized scores
+are assessed by correlation. These plots do not present an abundance-error
+comparison with SiCmiR. Model development and RNA-only application are shown
+separately. No models were fitted or predictions recomputed for this figure.
+
 ## miR-21 prediction example
 
 `mir21-example.csv` contains all 32 hsa-miR-21-5p (MIMAT0000076) estimates from
