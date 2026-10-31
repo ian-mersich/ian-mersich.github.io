@@ -16,12 +16,12 @@ images, so the page displays the PNG. Font terms are retained in
 preparation and has not been posted. Original artwork and results are supplied
 by Ian Mersich under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 
-`mirna-performance-comparisons.png` presents the saved study comparisons as a
-separate figure below the workflow and architecture, with its editable SVG
-linked for full-size viewing. The older combined
+`mirna-performance-comparisons.png` and its editable SVG retain the earlier
+website performance comparison figure. It is no longer displayed in the
+selected study; its existing asset URLs remain available. The older combined
 `mirna-study-overview.svg` remains available for existing links.
 
-`mirna-study-comparisons.csv` contains the nine displayed means, six available
+`mirna-study-comparisons.csv` retains the nine means from the earlier figure, six available
 95% bootstrap intervals, populations, miRNA coverage and source-table
 identifiers. TCGA compares original ridge gene-input models in pooled
 cancer-excluded predictions. CPTAC-3 and liver compare final procedures within
