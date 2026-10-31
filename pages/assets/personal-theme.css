@@ -80,10 +80,14 @@ body[data-preview-page="research"], body[data-preview-page="software"] { --max: 
 .selected-work__heading, .publications__heading { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 24px; align-items: baseline; margin-bottom: 12px; }
 .selected-work__heading h2, .publications__heading h2 { margin: 0; font-size: 20px; }
 .selected-work__heading > p, .publications__heading > p { max-width: 72ch; margin: 0; color: var(--muted); font-size: 12px; }
-.study-row { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 24px; padding: 17px 0; border-top: 1px solid var(--line); }
-.study-row__meta { color: var(--muted); font-size: 12px; }
+.research-heading { max-width: 900px; }
+.research-heading > p { max-width: none; }
+.selected-work__heading { display: block; max-width: 900px; }
+.selected-work__heading > p { max-width: none; margin-top: 6px; }
+.study-row { display: block; max-width: 900px; padding: 22px 0; border-top: 1px solid var(--line); }
+.study-row__meta { margin-bottom: 5px; color: var(--muted); font-size: 12px; }
 .study-row h3 { margin: 0 0 5px; font-size: 16px; }
-.study-row p { margin: 0 0 7px; color: var(--ink); font-size: 13px; }
+.study-row p { max-width: none; margin: 0 0 10px; color: var(--ink); font-size: 13px; }
 .study-row a { font-size: 13px; }
 .study-links { display: flex; flex-wrap: wrap; gap: 7px 22px; margin-top: 12px; }
 .study-row > div { min-width: 0; }
@@ -94,7 +98,12 @@ body[data-preview-page="research"], body[data-preview-page="software"] { --max: 
 .study-figure__viewport:focus-visible { outline: 2px solid var(--forest); outline-offset: 3px; }
 .study-figure--scrollable .study-figure__access { margin-top: 8px; color: var(--muted); }
 .study-figure img { display: block; width: 100%; height: auto; }
-.study-figure figcaption { margin-top: 12px; max-width: 72ch; color: var(--muted); }
+.study-figure figcaption { margin-top: 12px; max-width: none; color: var(--muted); }
+.study-figure__pan-hint { display: none; }
+.study-notes { margin-top: 10px; color: var(--muted); }
+.study-notes summary { width: fit-content; cursor: pointer; color: var(--forest); }
+.study-notes > p { margin-top: 8px; color: var(--muted); }
+@media (max-width: 967px) { .study-figure__pan-hint { display: block; } }
 .publications > h3 { margin: 24px 0 7px; font-size: 16px; }
 .publication-list, .other-work ul { margin: 0; padding: 0; list-style: none; }
 .publication-list li, .other-work li { padding: 13px 0; border-top: 1px solid var(--line); font-size: 13px; }
