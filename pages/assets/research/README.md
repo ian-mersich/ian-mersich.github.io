@@ -4,11 +4,22 @@ These assets illustrate two projects described on the Research page.
 
 ## miRNA modeling and performance comparisons
 
-`mirna-study-overview.svg` summarizes Ian Mersich's RNA-seq-to-mature-miRNA
-study from the 23 October 2026 manuscript and scientific companion 1.16.2.
-The manuscript is in preparation and has not been posted. Original artwork
-and results are supplied by Ian Mersich under
-[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+`mirna-model-development.png` reproduces the original high-resolution Figure 1A–B from Ian Mersich's
+23 October 2026 manuscript and scientific companion 1.16.2. It separates
+model development, cancer-exclusion evaluation and RNA-only application,
+then illustrates the distinct P1 and P2 ridge–neural models. The PNG bytes match the current manuscript figure exactly. The linked
+`mirna-model-development.svg` retains editable drawing elements and labels,
+with a larger intrinsic display size and embedded DejaVu Sans subsets for
+standalone viewing. SVG fonts are not reliably applied when embedded as HTML
+images, so the page displays the PNG. Font terms are retained in
+`mirna-figure-font-LICENSE.txt`. The expression matrices are schematic. The manuscript is in
+preparation and has not been posted. Original artwork and results are supplied
+by Ian Mersich under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+
+`mirna-performance-comparisons.png` presents the saved study comparisons as a
+separate figure below the workflow and architecture, with its editable SVG
+linked for full-size viewing. The older combined
+`mirna-study-overview.svg` remains available for existing links.
 
 `mirna-study-comparisons.csv` contains the nine displayed means, six available
 95% bootstrap intervals, populations, miRNA coverage and source-table
