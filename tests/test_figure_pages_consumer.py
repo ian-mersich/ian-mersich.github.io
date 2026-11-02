@@ -129,7 +129,7 @@ class FigurePagesConsumerTests(unittest.TestCase):
         self.assertEqual(json.loads((output / "FIGURE_RELEASE.json").read_text())["package_sha256"], "b" * 64)
 
     def test_reviewed_shared_releases_preserve_every_payload_byte_and_version(self) -> None:
-        for version in ("1.0.0-beta.10", "1.0.0-beta.11", "1.0.0-beta.12", "1.0.0-beta.13", "1.0.0-beta.14", "1.0.0-beta.15", "1.0.0-beta.16", "1.0.0-beta.17", "1.0.0-beta.18", "1.0.0-beta.19"):
+        for version in ("1.0.0-beta.10", "1.0.0-beta.11", "1.0.0-beta.12", "1.0.0-beta.13", "1.0.0-beta.14", "1.0.0-beta.15", "1.0.0-beta.16", "1.0.0-beta.17", "1.0.0-beta.18", "1.0.0-beta.19", "1.0.0-beta.21"):
             with self.subTest(version=version):
                 expected = self.shared_release(version=version)
                 output = self.build(output=self.website / version)
@@ -159,6 +159,8 @@ class FigurePagesConsumerTests(unittest.TestCase):
             ("1.0.0-beta.17", builder.SHARED_RELEASE_URLS["1.0.0-beta.18"]),
             ("1.0.0-beta.18", builder.SHARED_RELEASE_URLS["1.0.0-beta.19"]),
             ("1.0.0-beta.19", builder.SHARED_RELEASE_URLS["1.0.0-beta.18"]),
+            ("1.0.0-beta.19", builder.SHARED_RELEASE_URLS["1.0.0-beta.21"]),
+            ("1.0.0-beta.21", builder.SHARED_RELEASE_URLS["1.0.0-beta.19"]),
             (None, builder.SHARED_RELEASE_URLS["1.0.0-beta.10"]),
         ]:
             with self.subTest(version=version, url=url):
@@ -166,31 +168,31 @@ class FigurePagesConsumerTests(unittest.TestCase):
                 with self.assertRaisesRegex(builder.BuildError, "pinned reviewed release"):
                     builder.load_release_config(self.config)
 
-    def test_beta19_config_pins_unpublished_web_payload_identity(self) -> None:
+    def test_beta21_config_pins_unpublished_web_payload_identity(self) -> None:
         config = json.loads((TEMPLATE / "config/figure-release.json").read_text(encoding="utf-8"))
         self.assertEqual(config["schema"], "figurePagesRelease.v2")
-        self.assertEqual(config["product_version"], "1.0.0-beta.19")
-        self.assertEqual(config["archive_url"], builder.SHARED_RELEASE_URLS["1.0.0-beta.19"])
-        self.assertEqual(config["archive_sha256"], "04f4147a157d6ffc8dd52c87520eb3990966a59b4c459ec34c5b8c5a920e92ef")
-        self.assertEqual(config["source_revision"], "16a54f3337af7e0789c74d4c66f25e406e45b0a7")
-        self.assertEqual(config["package_sha256"], "93ecf1ff7612ef3c532d705eb23ebe5f058ee1703323d92e5c4284efc2f37458")
-        self.assertEqual(config["payload_tree_sha256"], "45822c8e525791eaec2b452f14f9d2b371440053b9cf401ff13774c473df24a1")
+        self.assertEqual(config["product_version"], "1.0.0-beta.21")
+        self.assertEqual(config["archive_url"], builder.SHARED_RELEASE_URLS["1.0.0-beta.21"])
+        self.assertEqual(config["archive_sha256"], "7a0dbf0db112747cbeb30dc99e6b303876ac236dff4bfecd408d576d0001c574")
+        self.assertEqual(config["source_revision"], "24440c08cb224843b60e0663be9cb2b66bbe1183")
+        self.assertEqual(config["package_sha256"], "9c2277b1a768eff1def03a46b73220c350bfa02587b92243ab5aafefddfd2c51")
+        self.assertEqual(config["payload_tree_sha256"], "61123ba1c6c495e5a7764cbbc888ba2402c6ed0df69c4574ce76199ed8c45fdf")
         self.assertEqual(builder.load_release_config(TEMPLATE / "config/figure-release.json"), config)
         page = (TEMPLATE / "pages/superbench/index.html").read_text(encoding="utf-8")
         self.assertIn("desktop scientific workspace", page)
         self.assertIn("slide decks", page)
-        self.assertIn("v1.0.0-beta.19", page)
+        self.assertIn("v1.0.0-beta.21", page)
         self.assertNotIn("presentations", page.lower())
         software = (TEMPLATE / "pages/software.html").read_text(encoding="utf-8")
         self.assertIn("slide decks", software)
 
-    def test_beta19_archive_digest_mismatch_fails_before_build(self) -> None:
+    def test_beta21_archive_digest_mismatch_fails_before_build(self) -> None:
         config = json.loads((TEMPLATE / "config/figure-release.json").read_text(encoding="utf-8"))
-        self.assertEqual(config["product_version"], "1.0.0-beta.19")
-        self.assertEqual(config["archive_url"], builder.SHARED_RELEASE_URLS["1.0.0-beta.19"])
+        self.assertEqual(config["product_version"], "1.0.0-beta.21")
+        self.assertEqual(config["archive_url"], builder.SHARED_RELEASE_URLS["1.0.0-beta.21"])
         self.config.write_text(json.dumps(dict(config, archive_sha256="0" * 64)), encoding="utf-8")
         with self.assertRaisesRegex(builder.BuildError, "digest mismatch"):
-            self.build(output=self.website / "beta19-wrong-digest")
+            self.build(output=self.website / "beta21-wrong-digest")
 
     def test_shared_release_rejects_tree_drift_and_files_outside_payload(self) -> None:
         self.shared_release()
