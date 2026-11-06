@@ -97,6 +97,10 @@ SHARED_RELEASE_URLS = {
         "https://github.com/ian-mersich/superbench-figure-tool/releases/download/"
         "v1.0.0-beta.26/figure-tool-web.zip"
     ),
+    "1.0.0-beta.29": (
+        "https://github.com/ian-mersich/superbench-figure-tool/releases/download/"
+        "v1.0.0-beta.29/figure-tool-web.zip"
+    ),
 }
 SHARED_PAYLOAD_ROOTS = ("app/", "vendor/", "assets/scientific-packs/",
                         "assets/scientific-scenes/", "web/")
