@@ -1,11 +1,11 @@
 {
   "schema": "mirnaPagesRelease.v1",
-  "product_version": "1.1.0",
+  "product_version": "1.1.1",
   "publication_status": "cleared",
   "model_id": "s09_p1_browser_v1",
-  "archive_url": "https://github.com/ian-mersich/ian-mersich.github.io/releases/download/mirna-predictor-v1.1.0/mirna-predictor-v1.1.0.zip",
-  "archive_sha256": "f842d3fcccac15715aa4c2028b814c501c9e05bdf067185dbd2e83c9a7d0c74f",
-  "release_manifest_sha256": "b110c7cf1115bea43f43c4b4a28bd2f7984b11fb975f9246ae482eb565c28d6b",
+  "archive_url": "https://github.com/ian-mersich/ian-mersich.github.io/releases/download/mirna-predictor-v1.1.1/mirna-predictor-v1.1.1.zip",
+  "archive_sha256": "e7ceb77decd7542c7718cd437a311309ef86a1363d15594d0c44e976f2362bba",
+  "release_manifest_sha256": "673f1107acf9a1734a27f61f93d6dafa5d7505706651def8786ef648abca6012",
   "archive_root": "",
   "destination": "superbench/mirna"
 }
